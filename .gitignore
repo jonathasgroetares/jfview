@@ -1,0 +1,177 @@
+# ==============================================================================
+# JFView - .gitignore
+# Regras de boas práticas e segurança para projetos Python / Desktop Linux
+# ==============================================================================
+
+# ------------------------------------------------------------------------------
+# 1. Segurança e Arquivos Sensíveis (NUNCA versionar)
+# ------------------------------------------------------------------------------
+# Variáveis de ambiente e segredos
+.env
+.env.*
+!.env.example
+*.env
+
+# Chaves privadas, certificados e tokens
+*.pem
+*.key
+*.pkcs12
+*.pfx
+*.p12
+*.crt
+*.csr
+id_rsa
+id_rsa.pub
+id_ed25519
+id_ed25519.pub
+
+# Arquivos de credenciais e senhas
+*credentials*
+*secret*
+*password*
+auth.json
+secrets.json
+
+# ------------------------------------------------------------------------------
+# 2. Bytecode e Caches do Python
+# ------------------------------------------------------------------------------
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+*.pyo
+
+# ------------------------------------------------------------------------------
+# 3. Ambientes Virtuais (Virtualenvs)
+# ------------------------------------------------------------------------------
+.venv/
+venv/
+env/
+ENV/
+env.bak/
+venv.bak/
+virtualenv/
+.Python/
+bin/
+lib/
+include/
+
+# ------------------------------------------------------------------------------
+# 4. Distribuição, Build e Pacotes (setup.py / pip / wheels)
+# ------------------------------------------------------------------------------
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# ------------------------------------------------------------------------------
+# 5. Pacotes Debian / Linux (Artefatos de Build Local)
+# ------------------------------------------------------------------------------
+*.deb
+*.ddeb
+*.changes
+*.buildinfo
+*.upload
+*.tar.gz
+*.tar.xz
+*.tar.bz2
+debian/.debhelper/
+debian/*.substvars
+debian/files
+
+# ------------------------------------------------------------------------------
+# 6. Testes, Qualidade de Código e Cobertura
+# ------------------------------------------------------------------------------
+.pytest_cache/
+.tox/
+.nox/
+.coverage
+.coverage.*
+nosetests.xml
+coverage.xml
+*.cover
+*.py,cover
+htmlcov/
+.hypothesis/
+.mypy_cache/
+.dmypy.json
+dmypy.json
+.ruff_cache/
+
+# ------------------------------------------------------------------------------
+# 7. Editores e IDEs (Configurações Locais)
+# ------------------------------------------------------------------------------
+# Visual Studio Code
+.vscode/
+!.vscode/settings.json
+!.vscode/launch.json
+!.vscode/tasks.json
+*.code-workspace
+
+# JetBrains (PyCharm, etc.)
+.idea/
+*.iws
+*.iml
+
+# Vim / Emacs / Nano
+*.swp
+*.swo
+*~
+.#*
+\#*\#
+
+# ------------------------------------------------------------------------------
+# 8. Logs e Arquivos Temporários do Sistema
+# ------------------------------------------------------------------------------
+*.log
+logs/
+*.tmp
+*.bak
+*.orig
+tmp/
+temp/
+
+# Linux
+.directory
+.Trash-*
+.fuse_hidden*
+.nfs*
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+.Spotlight-V100
+.Trashes
+
+# Windows
+Thumbs.db
+Thumbs.db:encryptable
+ehthumbs.db
+ehthumbs_vista.db
+[Dd]esktop.ini
+$RECYCLE.BIN/
+
+# ------------------------------------------------------------------------------
+# 9. Dados e Imagens de Teste Locais
+# ------------------------------------------------------------------------------
+test_output/
+*.test.png
+*.test.jpg
+temp_*
+pano_test_*
+
