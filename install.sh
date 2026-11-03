@@ -36,7 +36,19 @@ echo "[3/4] Installing JFView to ${INSTALL_DIR}..."
 mkdir -p "${INSTALL_DIR}"
 cp -r "${SCRIPT_DIR}/jfview" "${INSTALL_DIR}/"
 cp "${SCRIPT_DIR}/run.sh" "${INSTALL_DIR}/"
+cp "${SCRIPT_DIR}/jfview-icon.jpeg" "${INSTALL_DIR}/" 2>/dev/null || true
 chmod +x "${INSTALL_DIR}/run.sh"
+
+# Install application icons for standard resolutions
+mkdir -p /usr/share/pixmaps
+cp "${SCRIPT_DIR}/jfview/resources/jfview-256.png" /usr/share/pixmaps/jfview.png
+
+for size in 16 24 32 48 64 128 256; do
+    if [ -f "${SCRIPT_DIR}/jfview/resources/jfview-${size}.png" ]; then
+        mkdir -p "/usr/share/icons/hicolor/${size}x${size}/apps"
+        cp "${SCRIPT_DIR}/jfview/resources/jfview-${size}.png" "/usr/share/icons/hicolor/${size}x${size}/apps/jfview.png"
+    fi
+done
 
 # Create launcher script
 cat > "${BIN_LINK}" << 'LAUNCHER'
@@ -52,7 +64,7 @@ cat > "${DESKTOP_FILE}" << DESKTOP
 Name=JFView
 Comment=Image Viewer and Editor
 Exec=/usr/local/bin/jfview %f
-Icon=image-viewer
+Icon=jfview
 Terminal=false
 Type=Application
 Categories=Graphics;Viewer;RasterGraphics;
@@ -60,8 +72,9 @@ MimeType=image/png;image/jpeg;image/bmp;image/gif;image/tiff;image/webp;image/sv
 StartupWMClass=jfview
 DESKTOP
 
-# Update desktop database
+# Update desktop and icon databases
 update-desktop-database /usr/share/applications/ 2>/dev/null || true
+gtk-update-icon-cache -f -t /usr/share/icons/hicolor 2>/dev/null || true
 
 echo
 echo "✓ JFView installed successfully!"
@@ -72,4 +85,3 @@ echo "  • Open a file:        jfview /path/to/image.png"
 echo "  • Find it in your application menu under Graphics"
 echo
 echo "To uninstall: sudo bash ${SCRIPT_DIR}/uninstall.sh"
-

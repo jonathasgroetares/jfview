@@ -33,7 +33,8 @@ class ImageCanvas(QGraphicsView):
         self._selection_rect = QRect()
 
         # Appearance
-        self.setRenderHint(QPainter.SmoothPixmapTransform)
+        self.setRenderHint(QPainter.Antialiasing, True)
+        self.setRenderHint(QPainter.SmoothPixmapTransform, True)
         self.setDragMode(QGraphicsView.ScrollHandDrag)
         self.setTransformationAnchor(QGraphicsView.AnchorUnderMouse)
         self.setResizeAnchor(QGraphicsView.AnchorUnderMouse)
@@ -57,6 +58,8 @@ class ImageCanvas(QGraphicsView):
         """Set the displayed image."""
         self._scene.clear()
         self._pixmap_item = self._scene.addPixmap(pixmap)
+        if self._pixmap_item:
+            self._pixmap_item.setTransformationMode(Qt.SmoothTransformation)
         self._scene.setSceneRect(QRectF(pixmap.rect()))
         self._selection_rect = QRect()
 
@@ -70,9 +73,19 @@ class ImageCanvas(QGraphicsView):
         """Check if an image is loaded."""
         return self._pixmap_item is not None
 
-    def fit_in_view(self):
-        """Fit the image in the view."""
+    def fit_in_view(self, only_if_larger: bool = False):
+        """Fit the image in the view. If only_if_larger is True, display at 100% if it fits."""
         if self._pixmap_item:
+            pixmap = self._pixmap_item.pixmap()
+            vp_w = self.viewport().width()
+            vp_h = self.viewport().height()
+
+            # If image fits without scaling and only_if_larger is requested, keep 100% (1:1)
+            if only_if_larger and vp_w > 0 and vp_h > 0:
+                if pixmap.width() <= vp_w and pixmap.height() <= vp_h:
+                    self.zoom_original()
+                    return
+
             self.fitInView(self._pixmap_item, Qt.KeepAspectRatio)
             self._zoom_factor = self.transform().m11()
             self.zoom_changed.emit(self._zoom_factor)

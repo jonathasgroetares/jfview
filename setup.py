@@ -8,6 +8,10 @@ setup(
     description="Image Viewer and Editor for Linux",
     author="JFView",
     packages=find_packages(),
+    package_data={
+        "jfview": ["resources/*"],
+    },
+    include_package_data=True,
     python_requires=">=3.8",
     install_requires=[
         "PyQt5>=5.15",

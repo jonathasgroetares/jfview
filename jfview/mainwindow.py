@@ -50,6 +50,44 @@ SAVE_FORMATS = (
 )
 
 
+def get_app_icon() -> QIcon:
+    """Find and return the application icon with safe standard dimensions."""
+    pkg_dir = os.path.dirname(os.path.abspath(__file__))
+    res_dir = os.path.join(pkg_dir, "resources")
+    icon = QIcon()
+
+    # Prefer multi-size icon set (up to 256x256 to stay well within X11/XCB limits)
+    sizes = [16, 24, 32, 48, 64, 128, 256]
+    added_any = False
+    for s in sizes:
+        p = os.path.join(res_dir, f"jfview-{s}.png")
+        if os.path.exists(p):
+            icon.addFile(p)
+            added_any = True
+
+    if added_any:
+        return icon
+
+    # Fallback: load and scale down to max 256x256 to prevent XCB request overflow
+    single_candidates = [
+        os.path.join(res_dir, "jfview-256.png"),
+        "/usr/share/pixmaps/jfview.png",
+        "/usr/share/icons/hicolor/256x256/apps/jfview.png",
+        os.path.join(res_dir, "jfview-icon.png"),
+        os.path.join(os.path.dirname(pkg_dir), "jfview-icon.jpeg"),
+    ]
+    for path in single_candidates:
+        if os.path.exists(path):
+            pix = QPixmap(path)
+            if not pix.isNull():
+                if pix.width() > 256 or pix.height() > 256:
+                    pix = pix.scaled(256, 256, Qt.KeepAspectRatio, Qt.SmoothTransformation)
+                icon.addPixmap(pix)
+                return icon
+
+    return QIcon.fromTheme("image-viewer")
+
+
 class MainWindow(QMainWindow):
     """Main application window."""
 
@@ -59,6 +97,10 @@ class MainWindow(QMainWindow):
         self.setWindowTitle("JFView - Image Viewer & Editor")
         self.setMinimumSize(800, 600)
         self.resize(1200, 800)
+
+        app_icon = get_app_icon()
+        if not app_icon.isNull():
+            self.setWindowIcon(app_icon)
 
         self._current_file = None
         self._modified = False
@@ -520,7 +562,7 @@ class MainWindow(QMainWindow):
             self._undo_stack.clear()
             self._redo_stack.clear()
             self._set_image(pixmap, push_undo=False)
-            self._canvas.fit_in_view()
+            self._canvas.fit_in_view(only_if_larger=True)
         except Exception as e:
             QMessageBox.critical(self, "Error", f"Could not open file:\n{e}")
 
@@ -538,7 +580,7 @@ class MainWindow(QMainWindow):
             self._undo_stack.clear()
             self._redo_stack.clear()
             self._set_image(pixmap, push_undo=False)
-            self._canvas.fit_in_view()
+            self._canvas.fit_in_view(only_if_larger=True)
 
     def _on_open(self):
         if not self._check_save():
@@ -703,7 +745,7 @@ class MainWindow(QMainWindow):
             self._redo_stack.clear()
             self._set_image(pixmap, push_undo=False)
             # Auto-adjust workspace to pasted image size
-            self._canvas.fit_in_view()
+            self._canvas.fit_in_view(only_if_larger=True)
             self._modified = True
             self._update_title()
             self.statusBar().showMessage(
@@ -868,9 +910,12 @@ class MainWindow(QMainWindow):
     # ── About ────────────────────────────────────────────────────
 
     def _on_about(self):
-        QMessageBox.about(
-            self,
-            "About JFView",
+        msg = QMessageBox(self)
+        msg.setWindowTitle("About JFView")
+        icon = get_app_icon()
+        if not icon.isNull():
+            msg.setIconPixmap(icon.pixmap(64, 64))
+        msg.setText(
             "<h2>JFView 1.0.0</h2>"
             "<p>Image Viewer and Editor for Linux</p>"
             "<p>Features:</p>"
@@ -882,8 +927,9 @@ class MainWindow(QMainWindow):
             "<li>Create panoramic images (horizontal/vertical)</li>"
             "<li>Undo/redo support</li>"
             "</ul>"
-            "<p>Built with PyQt5 and Pillow</p>",
+            "<p>Built with PyQt5 and Pillow</p>"
         )
+        msg.exec_()
 
     # ── Window Events ────────────────────────────────────────────
 

@@ -175,3 +175,8 @@ test_output/
 temp_*
 pano_test_*
 
+# Ícones e Assets da Aplicação (sempre rastrear)
+!jfview-icon.jpeg
+!jfview/resources/
+!jfview/resources/*
+

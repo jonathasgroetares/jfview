@@ -1,9 +1,10 @@
 [Desktop Entry]
 Name=JFView
 Comment=Image Viewer and Editor
-Exec=python3 -m jfview.main %f
-Icon=image-viewer
+Exec=jfview %f
+Icon=jfview
 Terminal=false
 Type=Application
-Categories=Graphics;Viewer;
+Categories=Graphics;Viewer;RasterGraphics;
 MimeType=image/png;image/jpeg;image/bmp;image/gif;image/tiff;image/webp;image/svg+xml;
+StartupWMClass=jfview
